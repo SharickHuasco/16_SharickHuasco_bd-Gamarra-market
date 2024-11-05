@@ -1,0 +1,107 @@
+/* Crear la base de datos */
+DROP DATABASE IF EXISTS dbGamarraMarket;
+CREATE DATABASE dbGamarraMarket DEFAULT CHARACTER SET utf8;
+USE dbGamarraMarket;
+
+/* Crear la tabla CLIENTE */
+CREATE TABLE CLIENTE (
+    id INT AUTO_INCREMENT,
+    tipo_documento CHAR(3),
+    numero_documento CHAR(9),
+    nombres VARCHAR(60),
+    apellidos VARCHAR(90),
+    email VARCHAR(80),
+    celular CHAR(9),
+    estado_civil CHAR(1),
+    activo BOOL DEFAULT 1,
+    PRIMARY KEY (id)
+);
+
+/* Crear la tabla PRODUCTO */
+CREATE TABLE PRODUCTO (
+    id INT AUTO_INCREMENT,
+    nombre VARCHAR(100),
+    descripcion TEXT,
+    precio DECIMAL(10, 2),
+    stock INT,
+    categoria VARCHAR(50),
+    activo BOOL DEFAULT 1,
+    PRIMARY KEY (id)
+);
+
+/* Crear la tabla VENTA */
+CREATE TABLE VENTA (
+    id INT AUTO_INCREMENT,
+    cliente_id INT,
+    fecha DATE,
+    total DECIMAL(10, 2),
+    PRIMARY KEY (id),
+    FOREIGN KEY (cliente_id) REFERENCES CLIENTE(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+/* Crear la tabla DETALLE_VENTA */
+CREATE TABLE DETALLE_VENTA (
+    id INT AUTO_INCREMENT,
+    venta_id INT,
+    producto_id INT,
+    cantidad INT,
+    precio_unitario DECIMAL(10, 2),
+    subtotal DECIMAL(10, 2),
+    PRIMARY KEY (id),
+    FOREIGN KEY (venta_id) REFERENCES VENTA(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES PRODUCTO(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+/* Eliminar filas específicas */
+-- Eliminar un cliente específico (por id)
+DELETE FROM CLIENTE WHERE id = 1; -- Reemplaza 1 con el id del cliente que deseas eliminar
+
+-- Eliminar un producto específico (por id)
+DELETE FROM PRODUCTO WHERE id = 1; -- Reemplaza 1 con el id del producto que deseas eliminar
+
+-- Eliminar una venta específica (por id)
+DELETE FROM VENTA WHERE id = 1; -- Reemplaza 1 con el id de la venta que deseas eliminar
+
+-- Eliminar un detalle de venta específico (por id)
+DELETE FROM DETALLE_VENTA WHERE id = 1; -- Reemplaza 1 con el id del detalle de venta que deseas eliminar
+
+/* Eliminar columnas específicas */
+-- Eliminar la columna 'email' de la tabla CLIENTE
+ALTER TABLE CLIENTE DROP COLUMN email;
+
+-- Eliminar la columna 'descripcion' de la tabla PRODUCTO
+ALTER TABLE PRODUCTO DROP COLUMN descripcion;
+
+-- Eliminar la columna 'total' de la tabla VENTA
+ALTER TABLE VENTA DROP COLUMN total;
+
+-- Eliminar la columna 'subtotal' de la tabla DETALLE_VENTA
+ALTER TABLE DETALLE_VENTA DROP COLUMN subtotal;
+
+/* Consultar tablas */
+SHOW TABLES;
+SHOW COLUMNS IN VENTA;
+
+SHOW TABLES;
+SHOW COLUMNS IN VENTA;
+
+SELECT
+    i.constraint_name, k.table_name, k.column_name,
+    k.referenced_table_name, k.referenced_column_name
+FROM
+    information_schema.TABLE_CONSTRAINTS i
+LEFT JOIN information_schema.KEY_COLUMN_USAGE k
+ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY'
+AND i.TABLE_SCHEMA = DATABASE();
+
+/* Listar todas las relaciones de clave foránea en la base de datos */
+SELECT
+    i.constraint_name, k.table_name, k.column_name,
+    k.referenced_table_name, k.referenced_column_name
+FROM
+    information_schema.TABLE_CONSTRAINTS i
+LEFT JOIN information_schema.KEY_COLUMN_USAGE k
+ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY'
+AND i.TABLE_SCHEMA = DATABASE();
